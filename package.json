@@ -1,0 +1,12 @@
+{
+  "name": "aiqnex-space-expedition",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AIQNex: Space Expedition — Phaser 3 browser game",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
