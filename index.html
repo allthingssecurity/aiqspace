@@ -335,6 +335,7 @@
             </div>
         </div>
         <div class="btn action-btn" id="btn-action">A</div>
+        <div class="btn action-btn" id="btn-thrust" style="right: 20px; bottom: 110px; background: rgba(34,197,94,0.4); border-color: rgba(34,197,94,0.7);">B</div>
     </div>
 
     <!-- Phaser 3 -->
@@ -396,6 +397,30 @@
 
     <!-- Load Game Files -->
     <script>
+        // Lightweight mobile input shim without affecting desktop
+        (function initMobileInput(){
+            const state = { left:false, right:false, up:false, down:false, fire:false, thrust:false };
+            function bind(id, key) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const on = () => { state[key] = true; };
+                const off = () => { state[key] = false; };
+                el.addEventListener('touchstart', (e)=>{ e.preventDefault(); on(); }, {passive:false});
+                el.addEventListener('touchend', (e)=>{ e.preventDefault(); off(); }, {passive:false});
+                el.addEventListener('touchcancel', (e)=>{ e.preventDefault(); off(); }, {passive:false});
+                el.addEventListener('mousedown', (e)=>{ e.preventDefault(); on(); });
+                el.addEventListener('mouseup', (e)=>{ e.preventDefault(); off(); });
+                el.addEventListener('mouseleave', (e)=>{ e.preventDefault(); off(); });
+            }
+            bind('btn-left','left');
+            bind('btn-right','right');
+            bind('btn-up','up');
+            bind('btn-down','down');
+            bind('btn-action','fire');
+            bind('btn-thrust','thrust');
+            window.mobileInput = state;
+        })();
+
         const v = Date.now();
 
         // Load config first
