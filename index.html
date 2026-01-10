@@ -419,6 +419,37 @@
             window.mobileInput = state;
             const mc = document.querySelector('.mobile-controls');
             if (mc) mc.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, {passive:false});
+
+            // Robust multi-touch fallback: map any touches over buttons to state
+            function rect(id){ const el = document.getElementById(id); return el ? el.getBoundingClientRect() : null; }
+            const areas = {
+                left: () => rect('btn-left'),
+                right: () => rect('btn-right'),
+                up: () => rect('btn-up'),
+                down: () => rect('btn-down'),
+                fire: () => rect('btn-action'),
+                thrust: () => rect('btn-thrust')
+            };
+            function inside(r, x, y){ return r && x>=r.left && x<=r.right && y>=r.top && y<=r.bottom; }
+            function updateFromTouches(touches){
+                // reset
+                state.left = state.right = state.up = state.down = state.fire = state.thrust = false;
+                for (let i=0;i<touches.length;i++){
+                    const t = touches[i];
+                    const x = t.clientX, y = t.clientY;
+                    for (const key of Object.keys(areas)){
+                        const r = areas[key]();
+                        if (inside(r, x, y)) state[key] = true;
+                    }
+                }
+            }
+            document.addEventListener('touchstart', (e)=>{ updateFromTouches(e.touches); }, {passive:false});
+            document.addEventListener('touchmove', (e)=>{ updateFromTouches(e.touches); }, {passive:false});
+            document.addEventListener('touchend', (e)=>{ updateFromTouches(e.touches); }, {passive:false});
+
+            // Ensure controls visible on mobile UAs even if media query fails
+            const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isMobile && mc) mc.style.display = 'block';
         })();
     </script>
 

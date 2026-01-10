@@ -1330,20 +1330,26 @@ class ShooterScene extends BaseGameScene {
         const speed = baseSpeed * (this.speedBoost || 1);
         this.player.setVelocity(0);
 
-        if ((this.cursors.left && this.cursors.left.isDown) || (this.wasd.A && this.wasd.A.isDown)) {
+        const m = (typeof window !== 'undefined' && window.mobileInput) ? window.mobileInput : {};
+        const left = ((this.cursors.left && this.cursors.left.isDown) || (this.wasd.A && this.wasd.A.isDown) || m.left);
+        const right = ((this.cursors.right && this.cursors.right.isDown) || (this.wasd.D && this.wasd.D.isDown) || m.right);
+        const up = ((this.cursors.up && this.cursors.up.isDown) || (this.wasd.W && this.wasd.W.isDown) || m.up);
+        const down = ((this.cursors.down && this.cursors.down.isDown) || (this.wasd.S && this.wasd.S.isDown) || m.down);
+
+        if (left) {
             this.player.setVelocityX(-speed);
-        } else if ((this.cursors.right && this.cursors.right.isDown) || (this.wasd.D && this.wasd.D.isDown)) {
+        } else if (right) {
             this.player.setVelocityX(speed);
         }
 
-        if ((this.cursors.up && this.cursors.up.isDown) || (this.wasd.W && this.wasd.W.isDown)) {
+        if (up) {
             this.player.setVelocityY(-speed);
-        } else if ((this.cursors.down && this.cursors.down.isDown) || (this.wasd.S && this.wasd.S.isDown)) {
+        } else if (down) {
             this.player.setVelocityY(speed);
         }
 
         // Thrust/forward drift
-        const thrusting = this.thrustKey && this.thrustKey.isDown;
+        const thrusting = ((this.thrustKey && this.thrustKey.isDown) || m.thrust) ? true : false;
         if (!this.thrust) this.thrust = 0.4;
         const target = thrusting ? 1.0 : 0.4;
         this.thrust += (target - this.thrust) * 0.05;
@@ -1352,7 +1358,7 @@ class ShooterScene extends BaseGameScene {
         this.updateUI();
 
         // Fire
-        if (this.fireKey && this.fireKey.isDown) {
+        if ((this.fireKey && this.fireKey.isDown) || m.fire) {
             this.fire();
         }
 
